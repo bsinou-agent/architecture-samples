@@ -25,6 +25,7 @@ plugins {
 
 allprojects {
     repositories {
+        mavenLocal()
         google()
         jcenter()
     }
@@ -74,4 +75,5 @@ ext {
     rulesVersion = '1.0.1'
     timberVersion = '4.7.1'
     truthVersion = '1.0'
+    koinVersion = '2.2.2'
 }

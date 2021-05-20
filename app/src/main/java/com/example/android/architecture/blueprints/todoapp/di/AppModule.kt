@@ -18,22 +18,26 @@ package com.example.android.architecture.blueprints.todoapp.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskViewModel
 import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.local.TasksLocalDataSource
 import com.example.android.architecture.blueprints.todoapp.data.source.local.ToDoDatabase
 import com.example.android.architecture.blueprints.todoapp.data.source.remote.TasksRemoteDataSource
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsViewModel
+import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailViewModel
+import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Qualifier
-import javax.inject.Singleton
-import kotlin.annotation.AnnotationRetention.RUNTIME
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.experimental.dsl.viewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier._q
+import org.koin.core.qualifier.named
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.experimental.builder.single
 
 /**
  * Module to tell Hilt how to provide instances of types that cannot be constructor-injected.
@@ -41,68 +45,106 @@ import kotlin.annotation.AnnotationRetention.RUNTIME
  * As these types are scoped to the application lifecycle using @Singleton, they're installed
  * in Hilt's ApplicationComponent.
  */
-@Module
-@InstallIn(ApplicationComponent::class)
-object AppModule {
+// @Module
+// @InstallIn(ApplicationComponent::class)
+// object AppModule {
+//
+//     @Qualifier
+//     @Retention(RUNTIME)
+//     annotation class RemoteTasksDataSource
+//
+//     @Qualifier
+//     @Retention(RUNTIME)
+//     annotation class LocalTasksDataSource
+//
+//     @Singleton
+//     @RemoteTasksDataSource
+//     @Provides
+//     fun provideTasksRemoteDataSource(): TasksDataSource {
+//         return TasksRemoteDataSource
+//     }
+//
+//     @Singleton
+//     @LocalTasksDataSource
+//     @Provides
+//     fun provideTasksLocalDataSource(
+//         database: ToDoDatabase,
+//         ioDispatcher: CoroutineDispatcher
+//     ): TasksDataSource {
+//         return TasksLocalDataSource(
+//             database.taskDao(), ioDispatcher
+//         )
+//     }
+//
+//     @Singleton
+//     @Provides
+//     fun provideDataBase(@ApplicationContext context: Context): ToDoDatabase {
+//         return Room.databaseBuilder(
+//             context.applicationContext,
+//             ToDoDatabase::class.java,
+//             "Tasks.db"
+//         ).build()
+//     }
+//
+//     @Singleton
+//     @Provides
+//     fun provideIoDispatcher() = Dispatchers.IO
+// }
 
-    @Qualifier
-    @Retention(RUNTIME)
-    annotation class RemoteTasksDataSource
+val appModule = module {
 
-    @Qualifier
-    @Retention(RUNTIME)
-    annotation class LocalTasksDataSource
+    viewModel<AddEditTaskViewModel>()
+    viewModel<StatisticsViewModel>()
+    viewModel<TaskDetailViewModel>()
+    viewModel { params -> TasksViewModel(get(), params.get()) }
 
-    @Singleton
-    @RemoteTasksDataSource
-    @Provides
-    fun provideTasksRemoteDataSource(): TasksDataSource {
-        return TasksRemoteDataSource
+    // TasksRemoteDataSource
+    single<TasksDataSource>(named("TasksRemoteDataSource")) {
+        TasksRemoteDataSource
     }
 
-    @Singleton
-    @LocalTasksDataSource
-    @Provides
-    fun provideTasksLocalDataSource(
-        database: ToDoDatabase,
-        ioDispatcher: CoroutineDispatcher
-    ): TasksDataSource {
-        return TasksLocalDataSource(
-            database.taskDao(), ioDispatcher
-        )
+    // LocalTasksDataSource
+    single<TasksDataSource>(named("LocalTasksDataSource")) {
+        TasksLocalDataSource(get<ToDoDatabase>().taskDao(), get())
     }
 
-    @Singleton
-    @Provides
-    fun provideDataBase(@ApplicationContext context: Context): ToDoDatabase {
-        return Room.databaseBuilder(
-            context.applicationContext,
+    single {
+        Room.databaseBuilder(
+            androidContext().applicationContext,
             ToDoDatabase::class.java,
             "Tasks.db"
         ).build()
     }
 
-    @Singleton
-    @Provides
-    fun provideIoDispatcher() = Dispatchers.IO
+    single { Dispatchers.IO }
 }
 
 /**
  * The binding for TasksRepository is on its own module so that we can replace it easily in tests.
  */
-@Module
-@InstallIn(ApplicationComponent::class)
-object TasksRepositoryModule {
-
-    @Singleton
-    @Provides
-    fun provideTasksRepository(
-        @AppModule.RemoteTasksDataSource remoteTasksDataSource: TasksDataSource,
-        @AppModule.LocalTasksDataSource localTasksDataSource: TasksDataSource,
-        ioDispatcher: CoroutineDispatcher
-    ): TasksRepository {
-        return DefaultTasksRepository(
-            remoteTasksDataSource, localTasksDataSource, ioDispatcher
+val tasksRepositoryModule = module {
+    single<TasksRepository> {
+        DefaultTasksRepository(
+            get(named("TasksRemoteDataSource")),
+            get(named("LocalTasksDataSource")),
+            get()
         )
     }
 }
+
+// @Module
+// @InstallIn(ApplicationComponent::class)
+// object TasksRepositoryModule {
+//
+//     @Singleton
+//     @Provides
+//     fun provideTasksRepository(
+//         @AppModule.RemoteTasksDataSource remoteTasksDataSource: TasksDataSource,
+//         @AppModule.LocalTasksDataSource localTasksDataSource: TasksDataSource,
+//         ioDispatcher: CoroutineDispatcher
+//     ): TasksRepository {
+//         return DefaultTasksRepository(
+//             remoteTasksDataSource, localTasksDataSource, ioDispatcher
+//         )
+//     }
+// }

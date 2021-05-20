@@ -17,7 +17,12 @@
 package com.example.android.architecture.blueprints.todoapp
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import com.example.android.architecture.blueprints.todoapp.di.appModule
+import com.example.android.architecture.blueprints.todoapp.di.tasksRepositoryModule
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 import timber.log.Timber
 import timber.log.Timber.DebugTree
 
@@ -27,11 +32,15 @@ import timber.log.Timber.DebugTree
  *
  * Also, sets up Timber in the DEBUG BuildConfig. Read Timber's documentation for production setups.
  */
-@HiltAndroidApp
 class TodoApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) Timber.plant(DebugTree())
+        startKoin {
+            androidContext(this@TodoApplication)
+            androidLogger(Level.INFO)
+            modules(appModule + tasksRepositoryModule)
+        }
     }
 }
