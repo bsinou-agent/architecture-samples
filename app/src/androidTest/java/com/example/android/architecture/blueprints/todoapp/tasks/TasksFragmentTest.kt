@@ -51,7 +51,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
 import org.koin.core.context.loadKoinModules
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
 import org.koin.core.logger.Level
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTest
@@ -72,7 +75,8 @@ class TasksFragmentTest : KoinTest {
 
     @Before
     fun init() {
-        loadKoinModules(testTasksRepositoryModule)
+        GlobalContext.getOrNull()?.let { stopKoin() }
+        startKoin { modules(allModules + testTasksRepositoryModule) }
         // Populate @Inject fields in test class
         // hiltRule.inject()
     }
