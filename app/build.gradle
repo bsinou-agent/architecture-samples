@@ -109,6 +109,7 @@ dependencies {
     implementation "io.insert-koin:koin-androidx-ext:$koinVersion"
     implementation "io.insert-koin:koin-androidx-viewmodel:$koinVersion"
     testImplementation "io.insert-koin:koin-test:$koinVersion"
+    androidTestImplementation "io.insert-koin:koin-test:$koinVersion"
 
 //    // Hilt
 //    implementation "com.google.dagger:hilt-android:$hiltVersion"

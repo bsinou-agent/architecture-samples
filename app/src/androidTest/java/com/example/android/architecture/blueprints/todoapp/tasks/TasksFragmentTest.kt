@@ -39,12 +39,10 @@ import androidx.test.filters.MediumTest
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
-import com.example.android.architecture.blueprints.todoapp.di.TasksRepositoryModule
+import com.example.android.architecture.blueprints.todoapp.di.allModules
+import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
 import com.example.android.architecture.blueprints.todoapp.launchFragmentInHiltContainer
 import com.example.android.architecture.blueprints.todoapp.util.saveTaskBlocking
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
@@ -53,9 +51,14 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.loadKoinModules
+import org.koin.core.logger.Level
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import javax.inject.Inject
 
 /**
  * Integration test for the Task List screen.
@@ -63,20 +66,15 @@ import javax.inject.Inject
 @RunWith(AndroidJUnit4::class)
 @MediumTest
 @ExperimentalCoroutinesApi
-@UninstallModules(TasksRepositoryModule::class)
-@HiltAndroidTest
-class TasksFragmentTest {
+class TasksFragmentTest : KoinTest {
 
-    @get:Rule
-    var hiltRule = HiltAndroidRule(this)
-
-    @Inject
-    lateinit var repository: TasksRepository
+    val repository: TasksRepository by inject()
 
     @Before
     fun init() {
+        loadKoinModules(testTasksRepositoryModule)
         // Populate @Inject fields in test class
-        hiltRule.inject()
+        // hiltRule.inject()
     }
 
     @Test

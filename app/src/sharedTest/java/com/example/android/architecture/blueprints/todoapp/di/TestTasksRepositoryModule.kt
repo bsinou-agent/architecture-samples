@@ -19,21 +19,22 @@ package com.example.android.architecture.blueprints.todoapp.di
 import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.FakeRepository
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
-import javax.inject.Singleton
+import org.koin.dsl.bind
+import org.koin.dsl.module
+import org.koin.experimental.builder.single
 
 /**
  * TasksRepository binding to use in tests.
  *
  * Hilt will inject a [FakeRepository] instead of a [DefaultTasksRepository].
  */
-@Module
-@InstallIn(ApplicationComponent::class)
-abstract class TestTasksRepositoryModule {
-    @Singleton
-    @Binds
-    abstract fun bindRepository(repo: FakeRepository): TasksRepository
+// @Module
+// @InstallIn(ApplicationComponent::class)
+// abstract class TestTasksRepositoryModule {
+//     @Singleton
+//     @Binds
+//     abstract fun bindRepository(repo: FakeRepository): TasksRepository
+// }
+val testTasksRepositoryModule = module(override = true) {
+    single<FakeRepository>() bind TasksRepository::class
 }

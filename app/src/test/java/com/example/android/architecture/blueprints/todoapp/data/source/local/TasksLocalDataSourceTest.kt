@@ -35,6 +35,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.stopKoin
 
 /**
  * Integration test for the [TasksDataSource].
@@ -58,6 +59,8 @@ class TasksLocalDataSourceTest {
 
     @Before
     fun setup() {
+        stopKoin()
+
         // using an in-memory database for testing, since it doesn't survive killing the process
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),

@@ -16,7 +16,6 @@
 
 package com.example.android.architecture.blueprints.todoapp.di
 
-import android.content.Context
 import androidx.room.Room
 import com.example.android.architecture.blueprints.todoapp.addedittask.AddEditTaskViewModel
 import com.example.android.architecture.blueprints.todoapp.data.source.DefaultTasksRepository
@@ -28,12 +27,10 @@ import com.example.android.architecture.blueprints.todoapp.data.source.remote.Ta
 import com.example.android.architecture.blueprints.todoapp.statistics.StatisticsViewModel
 import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetailViewModel
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.experimental.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier._q
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -92,21 +89,16 @@ import org.koin.experimental.builder.single
 // }
 
 val appModule = module {
-
     viewModel<AddEditTaskViewModel>()
     viewModel<StatisticsViewModel>()
     viewModel<TaskDetailViewModel>()
-    viewModel { params -> TasksViewModel(get(), params.get()) }
+    viewModel { params -> TasksViewModel(get(), params.get()) } //Better in 3.x
 
     // TasksRemoteDataSource
-    single<TasksDataSource>(named("TasksRemoteDataSource")) {
-        TasksRemoteDataSource
-    }
+    single<TasksDataSource>(named("TasksRemoteDataSource")) { TasksRemoteDataSource }
 
     // LocalTasksDataSource
-    single<TasksDataSource>(named("LocalTasksDataSource")) {
-        TasksLocalDataSource(get<ToDoDatabase>().taskDao(), get())
-    }
+    single<TasksLocalDataSource>(named("LocalTasksDataSource")) bind TasksDataSource::class
 
     single {
         Room.databaseBuilder(
@@ -115,6 +107,7 @@ val appModule = module {
             "Tasks.db"
         ).build()
     }
+    single { get<ToDoDatabase>().taskDao() }
 
     single { Dispatchers.IO }
 }
@@ -131,6 +124,8 @@ val tasksRepositoryModule = module {
         )
     }
 }
+
+val allModules = appModule + tasksRepositoryModule
 
 // @Module
 // @InstallIn(ApplicationComponent::class)

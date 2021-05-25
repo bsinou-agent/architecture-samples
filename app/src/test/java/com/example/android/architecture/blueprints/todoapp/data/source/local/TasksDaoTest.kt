@@ -23,6 +23,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.example.android.architecture.blueprints.todoapp.MainCoroutineRule
 import com.example.android.architecture.blueprints.todoapp.data.Task
+import com.example.android.architecture.blueprints.todoapp.di.allModules
+import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
@@ -33,11 +35,18 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.core.logger.Level
+import org.koin.test.AutoCloseKoinTest
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class TasksDaoTest {
+class TasksDaoTest : KoinTest {
 
     private lateinit var database: ToDoDatabase
 
@@ -52,6 +61,8 @@ class TasksDaoTest {
 
     @Before
     fun initDb() {
+        stopKoin()
+
         // using an in-memory database because the information stored here disappears when the
         // process is killed
         database = Room.inMemoryDatabaseBuilder(

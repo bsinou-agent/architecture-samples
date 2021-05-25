@@ -17,8 +17,7 @@
 package com.example.android.architecture.blueprints.todoapp
 
 import android.app.Application
-import com.example.android.architecture.blueprints.todoapp.di.appModule
-import com.example.android.architecture.blueprints.todoapp.di.tasksRepositoryModule
+import com.example.android.architecture.blueprints.todoapp.di.allModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -40,7 +39,7 @@ class TodoApplication : Application() {
         startKoin {
             androidContext(this@TodoApplication)
             androidLogger(Level.INFO)
-            modules(appModule + tasksRepositoryModule)
+            modules(allModules)
         }
     }
 }

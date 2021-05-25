@@ -37,19 +37,20 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
-import com.example.android.architecture.blueprints.todoapp.di.TasksRepositoryModule
+import com.example.android.architecture.blueprints.todoapp.di.allModules
+import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksActivity
 import com.example.android.architecture.blueprints.todoapp.util.EspressoIdlingResource
 import com.example.android.architecture.blueprints.todoapp.util.saveTaskBlocking
-import dagger.hilt.android.testing.HiltAndroidRule
-import dagger.hilt.android.testing.HiltAndroidTest
-import dagger.hilt.android.testing.UninstallModules
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import javax.inject.Inject
+import org.koin.core.logger.Level
+import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
+import org.koin.test.inject
 
 /**
  * Tests for the [DrawerLayout] layout component in [TasksActivity] which manages
@@ -60,24 +61,18 @@ import javax.inject.Inject
  */
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-@UninstallModules(TasksRepositoryModule::class)
-@HiltAndroidTest
-class AppNavigationTest {
+class AppNavigationTest : KoinTest {
 
     @get:Rule
-    var hiltRule = HiltAndroidRule(this)
+    val koinTestRule = KoinTestRule.create {
+        printLogger(Level.DEBUG)
+        modules(allModules + testTasksRepositoryModule)
+    }
 
-    @Inject
-    lateinit var tasksRepository: TasksRepository
+    val tasksRepository: TasksRepository by inject()
 
     // An Idling Resource that waits for Data Binding to have no pending bindings
     private val dataBindingIdlingResource = DataBindingIdlingResource()
-
-    @Before
-    fun init() {
-        // Populate @Inject fields in test class
-        hiltRule.inject()
-    }
 
     /**
      * Idling resources tell Espresso that the app is idle or busy. This is needed when operations
