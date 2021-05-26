@@ -28,20 +28,16 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
 import com.example.android.architecture.blueprints.todoapp.di.allModules
 import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
-import com.example.android.architecture.blueprints.todoapp.launchFragmentInHiltContainer
+import com.example.android.architecture.blueprints.todoapp.launchFragment
 import com.example.android.architecture.blueprints.todoapp.util.saveTaskBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.core.IsNot.not
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
 import org.koin.test.inject
-import javax.inject.Inject
 
 /**
  * Integration test for the Task Details screen.
@@ -51,16 +47,12 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class TaskDetailFragmentTest : KoinTest {
 
-    val repository: TasksRepository by inject()
-
-    @Before
-    fun init() {
-        GlobalContext.getOrNull()?.let { stopKoin() }
-        startKoin { modules(allModules + testTasksRepositoryModule) }
-
-        // Populate @Inject fields in test class
-        // hiltRule.inject()
+    @get:Rule
+    val koinTestRule = KoinTestRule.start {
+        modules(allModules + testTasksRepositoryModule)
     }
+
+    val repository: TasksRepository by inject()
 
     @Test
     fun activeTaskDetails_DisplayedInUi() {
@@ -70,7 +62,7 @@ class TaskDetailFragmentTest : KoinTest {
 
         // WHEN - Details fragment launched to display task
         val bundle = TaskDetailFragmentArgs(activeTask.id).toBundle()
-        launchFragmentInHiltContainer<TaskDetailFragment>(bundle, R.style.AppTheme)
+        launchFragment<TaskDetailFragment>(bundle, R.style.AppTheme)
 
         // THEN - Task details are displayed on the screen
         // make sure that the title/description are both shown and correct
@@ -91,7 +83,7 @@ class TaskDetailFragmentTest : KoinTest {
 
         // WHEN - Details fragment launched to display task
         val bundle = TaskDetailFragmentArgs(completedTask.id).toBundle()
-        launchFragmentInHiltContainer<TaskDetailFragment>(bundle, R.style.AppTheme)
+        launchFragment<TaskDetailFragment>(bundle, R.style.AppTheme)
 
         // THEN - Task details are displayed on the screen
         // make sure that the title/description are both shown and correct

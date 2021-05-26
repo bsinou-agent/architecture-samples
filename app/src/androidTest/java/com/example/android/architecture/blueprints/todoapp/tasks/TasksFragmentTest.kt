@@ -41,22 +41,15 @@ import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
 import com.example.android.architecture.blueprints.todoapp.di.allModules
 import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
-import com.example.android.architecture.blueprints.todoapp.launchFragmentInHiltContainer
+import com.example.android.architecture.blueprints.todoapp.launchFragment
 import com.example.android.architecture.blueprints.todoapp.util.saveTaskBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Matcher
 import org.hamcrest.core.IsNot.not
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.loadKoinModules
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.core.logger.Level
-import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
@@ -71,15 +64,12 @@ import org.mockito.Mockito.verify
 @ExperimentalCoroutinesApi
 class TasksFragmentTest : KoinTest {
 
-    val repository: TasksRepository by inject()
-
-    @Before
-    fun init() {
-        GlobalContext.getOrNull()?.let { stopKoin() }
-        startKoin { modules(allModules + testTasksRepositoryModule) }
-        // Populate @Inject fields in test class
-        // hiltRule.inject()
+    @get:Rule
+    val koinTestRule = KoinTestRule.start {
+        modules(allModules + testTasksRepositoryModule)
     }
+
+    val repository: TasksRepository by inject()
 
     @Test
     fun displayTask_whenRepositoryHasData() {
@@ -315,7 +305,7 @@ class TasksFragmentTest : KoinTest {
         // GIVEN - On the home screen
         val navController = mock(NavController::class.java)
 
-        launchFragmentInHiltContainer<TasksFragment>(Bundle(), R.style.AppTheme) {
+        launchFragment<TasksFragment>(Bundle(), R.style.AppTheme) {
             Navigation.setViewNavController(this.view!!, navController)
         }
 

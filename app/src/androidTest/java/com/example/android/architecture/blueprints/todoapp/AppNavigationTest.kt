@@ -50,7 +50,6 @@ import org.junit.runner.RunWith
 import org.koin.core.context.GlobalContext
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.core.logger.Level
 import org.koin.test.KoinTest
 import org.koin.test.KoinTestRule
 import org.koin.test.inject
@@ -66,11 +65,10 @@ import org.koin.test.inject
 @LargeTest
 class AppNavigationTest : KoinTest {
 
-    // @get:Rule
-    // val koinTestRule = KoinTestRule.create {
-    //     printLogger(Level.DEBUG)
-    //     modules(allModules + testTasksRepositoryModule)
-    // }
+    @get:Rule
+    val koinTestRule = KoinTestRule.start {
+        modules(allModules + testTasksRepositoryModule)
+    }
 
     val tasksRepository: TasksRepository by inject()
 
@@ -83,9 +81,6 @@ class AppNavigationTest : KoinTest {
      */
     @Before
     fun registerIdlingResource() {
-        GlobalContext.getOrNull()?.let { stopKoin() }
-        startKoin { modules(allModules + testTasksRepositoryModule) }
-
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
     }

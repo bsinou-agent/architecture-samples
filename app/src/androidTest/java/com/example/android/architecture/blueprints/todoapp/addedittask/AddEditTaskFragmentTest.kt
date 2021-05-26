@@ -33,23 +33,19 @@ import com.example.android.architecture.blueprints.todoapp.data.Result
 import com.example.android.architecture.blueprints.todoapp.data.source.TasksRepository
 import com.example.android.architecture.blueprints.todoapp.di.allModules
 import com.example.android.architecture.blueprints.todoapp.di.testTasksRepositoryModule
-import com.example.android.architecture.blueprints.todoapp.launchFragmentInHiltContainer
+import com.example.android.architecture.blueprints.todoapp.launchFragment
 import com.example.android.architecture.blueprints.todoapp.tasks.ADD_EDIT_RESULT_OK
 import com.example.android.architecture.blueprints.todoapp.util.getTasksBlocking
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.core.context.GlobalContext
-import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
+import org.koin.test.KoinTestRule
 import org.koin.test.inject
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import javax.inject.Inject
 
 /**
  * Integration test for the Add Task screen.
@@ -59,16 +55,12 @@ import javax.inject.Inject
 @ExperimentalCoroutinesApi
 class AddEditTaskFragmentTest : KoinTest{
 
-    val repository: TasksRepository by inject()
-
-    @Before
-    fun init() {
-        GlobalContext.getOrNull()?.let { stopKoin() }
-        startKoin { modules(allModules + testTasksRepositoryModule) }
-
-        // Populate @Inject fields in test class
-        // hiltRule.inject()
+    @get:Rule
+    val koinTestRule = KoinTestRule.start {
+        modules(allModules + testTasksRepositoryModule)
     }
+
+    val repository: TasksRepository by inject()
 
     @Test
     fun emptyTask_isNotSaved() {
@@ -78,7 +70,7 @@ class AddEditTaskFragmentTest : KoinTest{
             getApplicationContext<Context>().getString(R.string.add_task)
         ).toBundle()
 
-        launchFragmentInHiltContainer<AddEditTaskFragment>(bundle, R.style.AppTheme)
+        launchFragment<AddEditTaskFragment>(bundle, R.style.AppTheme)
 
         // WHEN - Enter invalid title and description combination and click save
         onView(withId(R.id.add_task_title_edit_text)).perform(clearText())
@@ -131,7 +123,7 @@ class AddEditTaskFragmentTest : KoinTest{
             getApplicationContext<Context>().getString(R.string.add_task)
         ).toBundle()
 
-        launchFragmentInHiltContainer<AddEditTaskFragment>(bundle, R.style.AppTheme) {
+        launchFragment<AddEditTaskFragment>(bundle, R.style.AppTheme) {
             Navigation.setViewNavController(view!!, navController)
         }
     }
