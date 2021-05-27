@@ -37,57 +37,8 @@ import org.koin.dsl.module
 import org.koin.experimental.builder.single
 
 /**
- * Module to tell Hilt how to provide instances of types that cannot be constructor-injected.
- *
- * As these types are scoped to the application lifecycle using @Singleton, they're installed
- * in Hilt's ApplicationComponent.
+ * Module to tell Koin how to provide instances
  */
-// @Module
-// @InstallIn(ApplicationComponent::class)
-// object AppModule {
-//
-//     @Qualifier
-//     @Retention(RUNTIME)
-//     annotation class RemoteTasksDataSource
-//
-//     @Qualifier
-//     @Retention(RUNTIME)
-//     annotation class LocalTasksDataSource
-//
-//     @Singleton
-//     @RemoteTasksDataSource
-//     @Provides
-//     fun provideTasksRemoteDataSource(): TasksDataSource {
-//         return TasksRemoteDataSource
-//     }
-//
-//     @Singleton
-//     @LocalTasksDataSource
-//     @Provides
-//     fun provideTasksLocalDataSource(
-//         database: ToDoDatabase,
-//         ioDispatcher: CoroutineDispatcher
-//     ): TasksDataSource {
-//         return TasksLocalDataSource(
-//             database.taskDao(), ioDispatcher
-//         )
-//     }
-//
-//     @Singleton
-//     @Provides
-//     fun provideDataBase(@ApplicationContext context: Context): ToDoDatabase {
-//         return Room.databaseBuilder(
-//             context.applicationContext,
-//             ToDoDatabase::class.java,
-//             "Tasks.db"
-//         ).build()
-//     }
-//
-//     @Singleton
-//     @Provides
-//     fun provideIoDispatcher() = Dispatchers.IO
-// }
-
 val appModule = module {
     viewModel<AddEditTaskViewModel>()
     viewModel<StatisticsViewModel>()
@@ -126,20 +77,3 @@ val tasksRepositoryModule = module {
 }
 
 val allModules = appModule + tasksRepositoryModule
-
-// @Module
-// @InstallIn(ApplicationComponent::class)
-// object TasksRepositoryModule {
-//
-//     @Singleton
-//     @Provides
-//     fun provideTasksRepository(
-//         @AppModule.RemoteTasksDataSource remoteTasksDataSource: TasksDataSource,
-//         @AppModule.LocalTasksDataSource localTasksDataSource: TasksDataSource,
-//         ioDispatcher: CoroutineDispatcher
-//     ): TasksRepository {
-//         return DefaultTasksRepository(
-//             remoteTasksDataSource, localTasksDataSource, ioDispatcher
-//         )
-//     }
-// }

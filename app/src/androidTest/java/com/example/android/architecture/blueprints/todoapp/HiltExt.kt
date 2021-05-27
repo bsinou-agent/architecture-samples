@@ -35,6 +35,7 @@ import androidx.test.core.app.ApplicationProvider
  * [HiltTestActivity] in the debug folder and include it in the debug AndroidManifest.xml file
  * as can be found in this project.
  */
+//TODO Can we remove this?
 inline fun <reified T : Fragment> launchFragment(
     fragmentArgs: Bundle? = null,
     @StyleRes themeResId: Int = R.style.FragmentScenarioEmptyFragmentActivityTheme,

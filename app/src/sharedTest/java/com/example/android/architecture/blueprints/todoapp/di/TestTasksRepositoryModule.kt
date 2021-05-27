@@ -26,15 +26,8 @@ import org.koin.experimental.builder.single
 /**
  * TasksRepository binding to use in tests.
  *
- * Hilt will inject a [FakeRepository] instead of a [DefaultTasksRepository].
+ * Koin will inject a [FakeRepository] instead of a [DefaultTasksRepository].
  */
-// @Module
-// @InstallIn(ApplicationComponent::class)
-// abstract class TestTasksRepositoryModule {
-//     @Singleton
-//     @Binds
-//     abstract fun bindRepository(repo: FakeRepository): TasksRepository
-// }
 val testTasksRepositoryModule = module(override = true) {
     single<FakeRepository>() bind TasksRepository::class
 }

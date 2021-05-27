@@ -18,4 +18,5 @@ package com.example.android.architecture.blueprints.todoapp
 
 import androidx.appcompat.app.AppCompatActivity
 
+//TODO Can we remove this?
 class HiltTestActivity : AppCompatActivity()

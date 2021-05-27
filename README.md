@@ -14,8 +14,7 @@ the following Architecture Components:
  - Navigation
  - Room
 
-It uses [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
-for dependency injection.
+It uses [Koin](https://insert-koin.io/) for dependency injection.
 
 
 ### Differences with master
@@ -27,12 +26,7 @@ for dependency injection.
 ### Testing
 
 UI tests don't rely on using the `mock` flavor to run quickly and hermetically. Instead, they
-use Hilt to provide their test versions.
-
-This is done by creating a `CustomTestRunner` that uses an `Application` configured with Hilt. As
-per the [Hilt testing documentation](https://developer.android.com/training/dependency-injection/hilt-android),
-`@HiltAndroidTest` will automatically create the right Hilt components for each test.
-
+use Koin to provide their test versions.
 
 ### License
 
