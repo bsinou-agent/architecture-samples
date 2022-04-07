@@ -29,12 +29,9 @@ import com.example.android.architecture.blueprints.todoapp.taskdetail.TaskDetail
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.experimental.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.experimental.builder.single
 
 /**
  * Module to tell Koin how to provide instances
@@ -49,7 +46,12 @@ val appModule = module {
     single<TasksDataSource>(named("TasksRemoteDataSource")) { TasksRemoteDataSource }
 
     // LocalTasksDataSource
-    single<TasksLocalDataSource>(named("LocalTasksDataSource")) bind TasksDataSource::class
+    single<TasksLocalDataSource>(named("LocalTasksDataSource")) {
+        TasksLocalDataSource(
+            get(),
+            get()
+        )
+    }
 
     single {
         Room.databaseBuilder(

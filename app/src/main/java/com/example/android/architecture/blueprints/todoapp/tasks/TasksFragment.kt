@@ -44,7 +44,7 @@ import timber.log.Timber
  */
 class TasksFragment : Fragment() {
 
-    private val viewModel by viewModel<TasksViewModel>(state = emptyState())
+    private val viewModel : TasksViewModel by viewModel() //<TasksViewModel>(state = emptyState())
 
     private val args: TasksFragmentArgs by navArgs()
 
